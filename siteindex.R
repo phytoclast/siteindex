@@ -75,20 +75,20 @@ forwardfrost <-
   ##### trained the model with a frostfree day model
   backwardfrost <-    
   lm(formula = LNSI ~ lnppt + Cold + Warm + AWC150 + poly(WaterTable, 
-                                                          2) + om150 + Wet + poly(pH50, 2) + clay150 + sand150 + carbdepth + 
-       WaterTable + Carya + Fagus + Juglans + Liriodendron + Populus + 
-       Prunus + Tilia + ABBA + ACRU + ACSA3 + FRAM2 + JUVI + PIST + 
-       PIRE + PIBA2 + QUAL + QURU + QUVE + PODE + THOC2 + Pinus + 
-       pH50 + Quercus + Bhs + WOOD_SPGR_GREENVOL_DRYWT + Shade + 
-       Ultisols + Inceptisols + Mollisols + Acer + Fraxinus + Picea + 
-       Liquidambar + Betula + Juniperus + Larix + Platanus + Robinia + 
-       Nyssa + Pseudotsuga + Tsuga + Sequoia + frost50 + Wet:WaterTable + 
-       AWC150:Pinus + Pinus:pH50 + WaterTable:Quercus + AWC150:Quercus + 
-       AWC150:WaterTable + lnppt:WaterTable + lnppt:Warm + AWC150:Bhs + 
-       WaterTable:Bhs, data = formodel)
+                                                          2) + om150 + Wet + poly(pH50, 2) +clay150 + sand150 + carbdepth + WaterTable + Carya + Fagus + Juglans + Liriodendron + Populus + Prunus + Tilia + ABBA + ACRU + ACSA3 + FRAM2 + JUVI + PIST + PIRE + PIBA2 + QUAL + QURU + QUVE + PODE + THOC2 + Pinus + pH50 + Quercus + Bhs + WOOD_SPGR_GREENVOL_DRYWT + Shade + Ultisols + Inceptisols + Mollisols + Acer + Fraxinus + Picea + Liquidambar + Betula + Juniperus + Larix + Platanus + Robinia + Nyssa + Pseudotsuga + Tsuga + Sequoia + frost50 + Wet:WaterTable + AWC150:Pinus + Pinus:pH50 + WaterTable:Quercus + AWC150:Quercus + AWC150:WaterTable + lnppt:WaterTable + lnppt:Warm + AWC150:Bhs + WaterTable:Bhs, data = formodel)
   
   summary(backwardfrost)
-  ###################
+ 
+  
+allsi <- si[,c("lnppt", "Cold", "Warm", "AWC150", "poly(WaterTable,2)", "om150", "Wet", "poly(pH50,2)", "clay150", "sand150", "carbdepth", "Wet*WaterTable", "Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", "QURU", "QUVE", "PODE", "THOC2", "Pinus*WaterTable", "Pinus*AWC150", "Pinus*pH50", "Quercus*WaterTable", "Quercus*AWC150", "Quercus*pH50", "WaterTable*AWC150", "WaterTable*lnppt", "lnppt*Warm", "Bhs", "Bhs*AWC150", "Bhs*WaterTable", "WOOD_SPGR_GREENVOL_DRYWT", "Shade", "Ultisols", "Alfisols", "Inceptisols", "Mollisols", "Vertisols", "Andisols", "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia", "frost50")]
+
+species <- unique(si[,c("SYMBOL","Wet","Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", "QURU", "QUVE", "PODE", "THOC2", "WOOD_SPGR_GREENVOL_DRYWT", "Shade", "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia")]
+  )
+
+FIPS <- si[,c("FIPS","lnppt", "Cold", "Warm", "om150", "Wet", "poly(pH50,2)", "clay150", "sand150", "carbdepth", "Wet*WaterTable", "Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", "QURU", "QUVE", "PODE", "THOC2", "Pinus*WaterTable", "Pinus*AWC150", "Pinus*pH50", "Quercus*WaterTable", "Quercus*AWC150", "Quercus*pH50", "WaterTable*AWC150", "WaterTable*lnppt", "lnppt*Warm", "Bhs", "Bhs*AWC150", "Bhs*WaterTable", "WOOD_SPGR_GREENVOL_DRYWT", "Shade", "Ultisols", "Alfisols", "Inceptisols", "Mollisols", "Vertisols", "Andisols", "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia", "frost50")]
+  
+  
+   ###################
   library(ggplot2)
   library(RColorBrewer)
   forplot <- aggregate(si[,c("frost50")], by=list(si$Cold, si$Warm), FUN='mean')
