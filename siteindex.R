@@ -82,12 +82,20 @@ forwardfrost <-
   
 allsi <- si[,c("lnppt", "Cold", "Warm", "AWC150", "poly(WaterTable,2)", "om150", "Wet", "poly(pH50,2)", "clay150", "sand150", "carbdepth", "Wet*WaterTable", "Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", "QURU", "QUVE", "PODE", "THOC2", "Pinus*WaterTable", "Pinus*AWC150", "Pinus*pH50", "Quercus*WaterTable", "Quercus*AWC150", "Quercus*pH50", "WaterTable*AWC150", "WaterTable*lnppt", "lnppt*Warm", "Bhs", "Bhs*AWC150", "Bhs*WaterTable", "WOOD_SPGR_GREENVOL_DRYWT", "Shade", "Ultisols", "Alfisols", "Inceptisols", "Mollisols", "Vertisols", "Andisols", "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia", "frost50")]
 
-species <- unique(si[,c("SYMBOL","Wet","Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", "QURU", "QUVE", "PODE", "THOC2", "WOOD_SPGR_GREENVOL_DRYWT", "Shade", "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia")]
+species <- unique(si[,c("SYMBOL","Wet","WOOD_SPGR_GREENVOL_DRYWT", "Shade",
+                        "Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", 
+                        "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", 
+                        "QURU", "QUVE", "PODE", "THOC2",  "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", 
+                        "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", 
+                        "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia")]
   )
 
-FIPS <- si[,c("FIPS","lnppt", "Cold", "Warm", "om150", "Wet", "poly(pH50,2)", "clay150", "sand150", "carbdepth", "Wet*WaterTable", "Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", "QURU", "QUVE", "PODE", "THOC2", "Pinus*WaterTable", "Pinus*AWC150", "Pinus*pH50", "Quercus*WaterTable", "Quercus*AWC150", "Quercus*pH50", "WaterTable*AWC150", "WaterTable*lnppt", "lnppt*Warm", "Bhs", "Bhs*AWC150", "Bhs*WaterTable", "WOOD_SPGR_GREENVOL_DRYWT", "Shade", "Ultisols", "Alfisols", "Inceptisols", "Mollisols", "Vertisols", "Andisols", "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia", "frost50")]
-  
-  
+FIPS <- unique(si[,c("fips","lnppt", "Cold", "Warm","frost50")])
+
+Series <- unique(si[,c("series", "om150", "pH50", "clay150", "sand150","WaterTable",
+              "carbdepth", "Bhs", "Ultisols", "Alfisols", "Inceptisols", "Mollisols", "Vertisols", "Andisols")])
+
+
    ###################
   library(ggplot2)
   library(RColorBrewer)
