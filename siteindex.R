@@ -120,10 +120,19 @@ ggplot(aes(x=Cold, y=Warm), data = forplot2)+
   geom_point(aes(color=frost50))+
   scale_colour_gradient2(low='green', high='red', mid = 'white', midpoint = 150)  
 
-ggplot(aes(x=carbdepth, y=exp(LNSI)), data = si[si$SYMBOL %in% 'LITU',])+#, data = si[si$Wet == 4,]
+ggplot(aes(x=(pH50), y=exp(LNSI)/0.3048), data = si[si$SYMBOL %in% 'PIST',])+#, data = si[si$Wet == 4,]
   geom_point(aes(), size= 0.1)+
   geom_smooth(method = 'loess', color = 'red')+
-  geom_smooth(method = 'lm', color = 'blue')
+  geom_smooth(method = 'lm', color = 'blue')+
+  scale_y_continuous(breaks = c(0:5)*25)+
+  coord_cartesian(ylim = c(0, 150))
+  
+
+ggplot(aes(x=SYMBOL, y=exp(LNSI)/0.3048), data = si)+#, data = si[si$Wet == 4,]
+  geom_boxplot()+
+  scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,200))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
   
 ###### select param
 
@@ -136,6 +145,11 @@ SelectFIPS <- c(26009)
 SelectSpecies <- c('ABBA','PIMA', 'PIBA2','FAGR','ACSA3','QUAL','POGR4', 'PIST', 'PIRE', 'QURU', 'POTR5', 'ACRU','FRNI','THOC2','LALA')
 
 SelectSpecies <- c('ABBA', 'ACRU', 'ACSA3', 'BEPA', 'FRNI', 'LALA', 'PIBA2', 'PIGL', 'PIMA', 'PIRE', 'PIST', 'POGR4', 'POTR5', 'QURU', 'THOC2', 'TIAM')
+c('GRAYLING','RUBICON','GRAYCALM','KALKASKA')
+ggplot(aes(x=paste(SYMBOL,series), y=exp(LNSI)/0.3048), data = si[si$SYMBOL %in% SelectSpecies & si$series %in% c('GRAYLING','PLAINFIELD','KALEVA','KALKASKA'),])+
+  geom_boxplot()+
+  scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,200))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 
 inputSpecies <- species[species$SYMBOL %in% SelectSpecies,]
@@ -200,7 +214,7 @@ write.csv(showtable, 'showtable.csv')
 #########weight standard formula with species of interest
 
 SelectSpecies <- c('ABBA', 'ACRU', 'ACSA3', 'BEPA', 'FRNI', 'LALA', 'PIBA2', 'PIGL', 'PIMA', 'PIRE', 'PIST', 'POGR4', 'POTR5', 'QURU', 'THOC2', 'TIAM')
-SelectSpecies <- c('ABBA')
+SelectSpecies <- c('THOC2')
 formodel <- si
 formodel$wts <- 1
 formodel[formodel$SYMBOL %in% SelectSpecies,]$wts <- 100
