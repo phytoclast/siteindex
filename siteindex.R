@@ -144,9 +144,9 @@ SelectSeries <- c('CATHRO', 'TAWAS', 'WAKELEY', 'ALGONQUIN', 'CHESTONIA', 'SPRIN
 SelectFIPS <- c(26009)
 SelectSpecies <- c('ABBA','PIMA', 'PIBA2','FAGR','ACSA3','QUAL','POGR4', 'PIST', 'PIRE', 'QURU', 'POTR5', 'ACRU','FRNI','THOC2','LALA')
 
-SelectSpecies <- c('ABBA', 'ACRU', 'ACSA3', 'BEPA', 'FRNI', 'LALA', 'PIBA2', 'PIGL', 'PIMA', 'PIRE', 'PIST', 'POGR4', 'POTR5', 'QURU', 'THOC2', 'TIAM')
-c('GRAYLING','RUBICON','GRAYCALM','KALKASKA')
-ggplot(aes(x=paste(SYMBOL,series), y=exp(LNSI)/0.3048), data = si[si$SYMBOL %in% SelectSpecies & si$series %in% c('GRAYLING','PLAINFIELD','KALEVA','KALKASKA'),])+
+SelectSpecies <- c('POGR4')
+SelectSeries <- c('RUBICON', 'OTISCO', 'CHINWHISKER', 'LEELANAU', 'CROSWELL', 'HALFADAY', 'KINROSS', 'EMMET', 'MENOMINEE', 'MORGANLAKE', 'KALKASKA')
+ggplot(aes(x=paste(SYMBOL,series), y=exp(LNSI)/0.3048), data = si[si$SYMBOL %in% SelectSpecies & si$series %in% SelectSeries,])+
   geom_boxplot()+
   scale_y_continuous(breaks = c(0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,200))+
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
@@ -214,10 +214,13 @@ write.csv(showtable, 'showtable.csv')
 #########weight standard formula with species of interest
 
 SelectSpecies <- c('ABBA', 'ACRU', 'ACSA3', 'BEPA', 'FRNI', 'LALA', 'PIBA2', 'PIGL', 'PIMA', 'PIRE', 'PIST', 'POGR4', 'POTR5', 'QURU', 'THOC2', 'TIAM')
-SelectSpecies <- c('THOC2')
+SelectSpecies <- c('POGR4')
+SelectSeries <- c('KALKASKA')
 formodel <- si
 formodel$wts <- 1
-formodel[formodel$SYMBOL %in% SelectSpecies,]$wts <- 100
+formodel[formodel$SYMBOL %in% SelectSpecies,]$wts <- 1000
+formodel[formodel$series %in% SelectSeries,]$wts <- 1000
+
 stepforward <-   
   lm(formula = LNSI ~ lnppt + frost50 + Pseudotsuga + Liriodendron + 
        AWC150 + Juniperus + Populus + om150 + Warm + I(Warm^0.5) + 
@@ -248,3 +251,43 @@ summarysi <- aggregate(inputsall[,c('Warm','Cold','ppt', 'SI_m','SI_ft')],
                        by= list(inputsall$fips, inputsall$SYMBOL,inputsall$series), FUN='mean')
 colnames(summarysi) <- c('fips', 'SYMBOL', 'series', 'Warm','Cold','ppt', 'SI_m','SI_ft')
 showtable <- (summarysi[order(summarysi$SYMBOL, summarysi$SI_m),c('fips', 'Warm','Cold','ppt', 'series', 'SYMBOL','SI_m','SI_ft')])
+
+########### find residuals by series
+stepbackward <-    
+  lm(formula = lm(formula = LNSI ~ lnppt + Cold + Warm + I(Warm^0.5) + AWC150 + 
+                    poly(WaterTable, 2) + om150 + Wet + poly(pH50, 2) + clay150 + 
+                    sand150 + carbdepth + Carya + Fagus + Juglans + 
+                    Liriodendron + Populus + Prunus + Tilia + ABBA + ACRU + ACSA3 + 
+                    FRAM2 + FRPE + JUVI + PIRE + PIBA2 + QUAL + QURU + QUVE + 
+                    PODE + THOC2 + Pinus + Quercus + Bhs + WOOD_SPGR_GREENVOL_DRYWT + 
+                    Shade + Ultisols + Mollisols + Vertisols + Andisols + Acer + 
+                    Picea + Liquidambar + Abies + Betula + Juniperus + Larix + 
+                    Platanus + Robinia + Nyssa + Pseudotsuga + frost50 + Wet:WaterTable + 
+                    WaterTable:Pinus + AWC150:Pinus + Pinus:pH50 + WaterTable:Quercus + 
+                    AWC150:Quercus + pH50:Quercus + AWC150:WaterTable + lnppt:WaterTable + 
+                    lnppt:Warm + AWC150:Bhs + WaterTable:Bhs, data = formodel), data = formodel)
+
+summary(stepbackward)
+
+stepforward <-   
+  lm(formula = LNSI ~ lnppt + frost50 + Pseudotsuga + Liriodendron + 
+       AWC150 + Juniperus + Populus + om150 + Warm + I(Warm^0.5) + 
+       Wet + Cold + poly(pH50, 2) + QUAL + Pinus + THOC2 + clay150 + 
+       FRAM2 + Shade + Picea + ABBA + WOOD_SPGR_GREENVOL_DRYWT + 
+       Prunus + QUVE + QURU + sand150 + carbdepth + Acer + PIRE + 
+       PIBA2 + Ultisols + poly(WaterTable, 2) + PIST + Betula + 
+       Quercus + Robinia + Liquidambar + Juglans + JUVI + Tilia + 
+       Abies + Larix + Platanus + Nyssa + Carya + Vertisols + Mollisols + 
+       Alfisols + Fagus + Fraxinus + PODE + Inceptisols + ACRU + 
+       ACSA3 + AWC150:Pinus + lnppt:Warm,
+     data = formodel, weights = formodel$wts)
+summary(stepforward)
+inputsall <- si
+
+inputsall$predSI <- predict(stepforward,inputsall)
+inputsall$resids <- inputsall$LNSI - inputsall$predSI
+
+SelectSeries <- c('MYAKKA', 'ELVE', 'SNOWDON', 'GILPIN', 'HOUGHTON','DAWSON','TAWAS', 'MORROCO','BREMS', 'RUBICON', 'GRAYLING','GRAYCALM','KALEVA','GRATTAN', 'PLAINFIELD', 'NESTER', 'PERRINTON', 'CROSWELL', 'PIPESTONE', 'KALKASKA')
+ggplot(aes(x=series, y=resids), data = inputsall[si$series %in% SelectSeries,])+
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
