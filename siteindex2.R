@@ -24,7 +24,19 @@ SelectSeries <- c('CATHRO', 'TAWAS', 'WAKELEY', 'ALGONQUIN', 'CHESTONIA', 'SPRIN
 SelectFIPS <- c(26009)
 SelectSpecies <- c('BEPA', 'ABBA','PIMA', 'PIBA2','FAGR','ACSA3','QUAL','POGR4', 'PIST', 'PIRE', 'QURU', 'POTR5', 'ACRU','FRNI','THOC2','LALA','TIAM')
 
+species <- unique(si[,c("SYMBOL","Wet","WOOD_SPGR_GREENVOL_DRYWT", "Shade",
+                        "Carya", "Fagus", "Juglans", "Liriodendron", "Populus", "Prunus", "Tilia", "Ulmus", 
+                        "ABBA", "ACRU", "ACSA3", "FRAM2", "FRPE", "JUVI", "PIST", "PIRE", "PIBA2", "QUAL", 
+                        "QURU", "QUVE", "PODE", "THOC2",  "Pinus", "Quercus", "Acer", "Fraxinus", "Picea", 
+                        "Liquidambar", "Abies", "Betula", "Juniperus", "Larix", "Celtis", "Thuja", "Platanus", 
+                        "Robinia", "Nyssa", "Pseudotsuga", "Tsuga", "Sequoia")]
+)
 
+FIPS <- aggregate(si[,c("lnppt","Cold", "Warm","frost50")], by = list(si$fips, si$elev), FUN = 'mean')
+colnames(FIPS) <- c("fips","elev","lnppt", "Cold", "Warm","frost50")
+
+Series <- unique(si[,c("series", "AWC150", "om150", "pH50", "clay150", "sand150","WaterTable",
+                       "carbdepth", "Bhs", "Ultisols", "Alfisols", "Inceptisols", "Mollisols", "Vertisols", "Andisols")])
 
 inputSpecies <- species[species$SYMBOL %in% SelectSpecies,]
 inputFIPS <- FIPS[FIPS$fips %in% SelectFIPS,]
@@ -80,3 +92,21 @@ ggplot(aes(x=series, y=SI_ft), data = inputsall[si$series %in% SelectSeries2,])+
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 write.csv(showtable, 'showtable.csv')
+
+
+
+#---- Simple filter
+library(plyr)
+SelectSeries2 <- c('MYAKKA', 'ELVE', 'SNOWDON', 'GILPIN', 'HOUGHTON','DAWSON','TAWAS', 'MORROCO','BREMS', 'RUBICON', 'GRAYLING','GRAYCALM','KALEVA','GRATTAN', 'PLAINFIELD', 'NESTER', 'PERRINTON', 'CROSWELL', 'PIPESTONE', 'KALKASKA')
+
+Selected_si <- subset(si, Warm <=16 & Warm >= 13 & Cold <= -9 & Cold >= -15 &  exp(lnppt) >= 700 & exp(lnppt) <= 900 )
+
+Selected_si_agg <-    ddply(Selected_si, c("series", 'SYMBOL'), summarise, Nrows = length(series),
+                                          siMin = exp(quantile(LNSI, 0))/0.3048, siMax = exp(quantile(LNSI, 1))/0.3048, siMean = exp(mean(LNSI))/0.3048)
+write.csv(Selected_si_agg, 'Selected_si_agg.csv')
+
+
+
+ggplot(aes(x=series, y=exp(LNSI)), data = Selected_si[Selected_si$series %in% SelectSeries2,])+
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
